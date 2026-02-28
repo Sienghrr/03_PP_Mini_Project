@@ -3,11 +3,9 @@ package dao.impl;
 import config.DatabaseConfig;
 import dao.ProductDAO;
 import domain.Product;
+import service.Utils;
 
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +36,37 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public boolean delete(int id) {
+        String sql = "SELECT * FROM products WHERE is_deleted=FALSE AND product_id=?";
+        PreparedStatement st;
+        ResultSet rs;
+
+        try( Connection connection = DatabaseConfig.getConnection();) {
+            st = connection.prepareStatement(sql);
+            st.setInt(1,id);
+            rs = st.executeQuery();
+            while (rs.next()){
+                System.out.println("ProductID: "+rs.getString("product_id"));
+                System.out.println("Product Name: "+rs.getString("product_name"));
+                System.out.println("Unit Price: "+rs.getString("unit_price"));
+                System.out.println("Quantity: "+rs.getString("quantity"));
+                System.out.println("Imported Date: "+rs.getString("imported_date"));
+                Utils.oneRowTable(mapRow(rs));
+            }
+            String choice = Utils.askToConfirm(id);
+            if (choice.equalsIgnoreCase("y")){
+                String sql_delete = """
+                    DELETE FROM products WHERE is_deleted=FALSE AND product_id=?
+                    """;
+                st = connection.prepareStatement(sql_delete);
+                st.setInt(1, id);
+                st.executeUpdate();
+                System.out.println( "Deleted Successfully");
+            }
+        } catch (SQLException e) {
+            System.err.println("Delete error: " + e.getMessage());
+        }finally {
+            DatabaseConfig.closeConnection();
+        }
         return false;
     }
 

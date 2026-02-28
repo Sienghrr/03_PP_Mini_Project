@@ -28,4 +28,11 @@ public class StockService {
         pendingDeletes.clear();
         hasUnsavedChanges = false;
     }
+    public List<Integer> getProductsID(){
+        List<Integer> productsID = new ArrayList<>();
+        for(Product product : sessionProducts){
+            productsID.add(product.getProductId());
+        }
+        return productsID;
+    }
 }
