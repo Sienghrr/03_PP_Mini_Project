@@ -4,10 +4,7 @@ import config.DatabaseConfig;
 import dao.ProductDAO;
 import domain.Product;
 
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +25,19 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public boolean insert(Product product) {
-        return false;
+        String sql = "INSERT INTO products (product_name, unit_price, quantity, imported_date) VALUES (?, ?, ?, ?)";
+        try(Connection con = DatabaseConfig.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql))  {
+            Date sqlDate = Date.valueOf(product.getImportedDate());
+            ps.setString(1, product.getProductName());
+            ps.setDouble(2, product.getUnitPrice());
+            ps.setInt(3, product.getQuantity());
+            ps.setDate(4, sqlDate);
+            int rows = ps.executeUpdate();
+            return rows>0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
