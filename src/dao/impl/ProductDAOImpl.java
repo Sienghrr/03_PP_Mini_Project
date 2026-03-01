@@ -41,19 +41,18 @@ public class ProductDAOImpl implements ProductDAO {
         ResultSet rs;
 
         try( Connection connection = DatabaseConfig.getConnection();) {
+            // Query the product with the given id to show info before delete
             st = connection.prepareStatement(sql);
             st.setInt(1,id);
             rs = st.executeQuery();
+            // show product info
             while (rs.next()){
-                System.out.println("ProductID: "+rs.getString("product_id"));
-                System.out.println("Product Name: "+rs.getString("product_name"));
-                System.out.println("Unit Price: "+rs.getString("unit_price"));
-                System.out.println("Quantity: "+rs.getString("quantity"));
-                System.out.println("Imported Date: "+rs.getString("imported_date"));
                 Utils.oneRowTable(mapRow(rs));
             }
+            // ask to confirm for deleting
             String choice = Utils.askToConfirm(id);
             if (choice.equalsIgnoreCase("y")){
+                // command to delete the product in database
                 String sql_delete = """
                     DELETE FROM products WHERE is_deleted=FALSE AND product_id=?
                     """;

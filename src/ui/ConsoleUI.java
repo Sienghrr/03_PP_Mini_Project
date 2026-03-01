@@ -39,7 +39,6 @@ public class ConsoleUI {
 
                     }
                     case "u" -> System.out.println("Update function");
-                    case "sa" -> System.out.println("Save Function");
                     default -> System.out.println("Invalid Option");
                 }
                 break;
