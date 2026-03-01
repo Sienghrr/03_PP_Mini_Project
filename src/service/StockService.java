@@ -59,4 +59,14 @@ public class StockService {
         return null;
     }
 
+    public int previewNextProductId() {
+        int max = 0;
+        for (Product p : sessionProducts) {
+            if (p.getProductId() > max) {
+                max = p.getProductId();
+            }
+        }
+        return max + 1;
+    }
+
 }
