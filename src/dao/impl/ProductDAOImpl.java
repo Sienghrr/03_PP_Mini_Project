@@ -52,6 +52,19 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public Product findById(int id) {
+        String sql = "SELECT * FROM products WHERE product_id = ? and is_deleted = false";
+        try(Connection con = DatabaseConfig.getConnection();
+        PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
