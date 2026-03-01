@@ -28,4 +28,35 @@ public class StockService {
         pendingDeletes.clear();
         hasUnsavedChanges = false;
     }
+    public void addProduct(Product product) {
+        if (product == null) {
+            throw new IllegalArgumentException("Product cannot be null");
+        }
+        String name = product.getProductName();
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Product name cannot be empty");
+        }
+        if (product.getUnitPrice()<=0 ){
+            throw new IllegalArgumentException("Unit price cannot be negative");
+        }
+        if (product.getQuantity()<0){
+            throw new IllegalArgumentException("Quantity cannot be negative");
+        }
+        if (product.getImportedDate() == null) {
+            throw new IllegalArgumentException("Imported date cannot be null");
+        }
+    sessionProducts.add(product);
+    pendingInserts.add(product);
+    hasUnsavedChanges = true;
+    }
+
+    public Product getProductById(int id) {
+        for (Product product : sessionProducts) {
+            if (product.getProductId() == id) {
+                return product;
+            }
+        }
+        return null;
+    }
+
 }
