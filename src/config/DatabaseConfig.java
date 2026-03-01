@@ -23,14 +23,4 @@ public class DatabaseConfig {
         }
         return connection;
     }
-
-    public static void closeConnection() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            System.err.println("Error closing connection: " + e.getMessage());
-        }
-    }
 }
