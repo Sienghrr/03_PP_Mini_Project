@@ -12,18 +12,6 @@ import java.util.List;
 
 public class ProductDAOImpl implements ProductDAO {
 
-    private Product mapRow(ResultSet rs) throws SQLException {
-        Product p = new Product();
-        p.setProductId(rs.getInt("product_id"));
-        p.setProductName(rs.getString("product_name"));
-        p.setUnitPrice(rs.getDouble("unit_price"));
-        p.setQuantity(rs.getInt("quantity"));
-        Date importDate = rs.getDate("imported_date");
-        p.setImportedDate(importDate != null ? importDate.toLocalDate() : LocalDate.now());
-        p.setDeleted(rs.getBoolean("is_deleted"));
-        return p;
-    }
-
     @Override
     public boolean insert(Product product) {
         return false;
@@ -80,7 +68,7 @@ public class ProductDAOImpl implements ProductDAO {
         String sql = "SELECT * FROM products WHERE is_deleted=FALSE ORDER BY product_id";
         try (Statement st = DatabaseConfig.getConnection().createStatement();
              ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) list.add(mapRow(rs));
+            while (rs.next()) list.add(ProductMapper.mapProduct(rs));
         } catch (SQLException e) {
             System.err.println("FindAll error: " + e.getMessage());
         }
