@@ -3,10 +3,8 @@ package dao.impl;
 import config.DatabaseConfig;
 import dao.ProductDAO;
 import domain.Product;
-import service.Utils;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,36 +22,6 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public boolean delete(int id) {
-        String sql = "SELECT * FROM products WHERE is_deleted=FALSE AND product_id=?";
-        PreparedStatement st;
-        ResultSet rs;
-
-        try( Connection connection = DatabaseConfig.getConnection();) {
-            // Query the product with the given id to show info before delete
-            st = connection.prepareStatement(sql);
-            st.setInt(1,id);
-            rs = st.executeQuery();
-            // show product info
-            while (rs.next()){
-                Utils.oneRowTable(mapRow(rs));
-            }
-            // ask to confirm for deleting
-            String choice = Utils.askToConfirm(id);
-            if (choice.equalsIgnoreCase("y")){
-                // command to delete the product in database
-                String sql_delete = """
-                    DELETE FROM products WHERE is_deleted=FALSE AND product_id=?
-                    """;
-                st = connection.prepareStatement(sql_delete);
-                st.setInt(1, id);
-                st.executeUpdate();
-                System.out.println( "Deleted Successfully");
-            }
-        } catch (SQLException e) {
-            System.err.println("Delete error: " + e.getMessage());
-        }finally {
-            DatabaseConfig.closeConnection();
-        }
         return false;
     }
 
