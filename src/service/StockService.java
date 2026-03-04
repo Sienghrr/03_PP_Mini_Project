@@ -101,7 +101,6 @@ public class StockService {
             return true;
         }
 
-
         boolean exists = sessionProducts.stream().anyMatch(p -> p.getProductId() == id);
         if (!exists) return false;
 
@@ -124,7 +123,14 @@ public class StockService {
 
 
     public List<Product> searchByName(String keyword) {
-        return null;
+        List<Product> visible = getVisibleProducts();
+        int total = visible.size();
+        int totalPages = getTotalPages();
+        if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+        int start = (currentPage - 1) * rowsPerPage;
+        int end   = Math.min(start + rowsPerPage, total);
+        if (start >= total) return new ArrayList<>();
+        return visible.subList(start, end);
     }
 
 
