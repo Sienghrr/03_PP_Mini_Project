@@ -51,9 +51,16 @@ public class StockService {
                 .filter(p -> !p.isDeleted() && p.getProductId() > 0 )
                 .collect(Collectors.toList());
     }
-    //GetPage-Product
+    //getPageProduct-feature
     public List<Product> getPageProducts() {
-        return null;
+        List<Product> visible = getVisibleProducts();
+        int total = visible.size();
+        int totalPages = getTotalPages();
+        if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+        int start = (currentPage - 1) * rowsPerPage;
+        int end   = Math.min(start + rowsPerPage, total);
+        if (start >= total) return new ArrayList<>();
+        return visible.subList(start, end);
     }
 
     public int getTotalPages() {
