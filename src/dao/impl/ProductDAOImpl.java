@@ -15,7 +15,24 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public void insert(Product product, Connection conn) {
-
+        String sql =
+                """
+                INSERT INTO products (product_name, unit_price, quantity, imported_date)
+                VALUES (?,?,?,?) RETURNING product_id
+                """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, product.getProductName());
+            ps.setDouble(2, product.getUnitPrice());
+            ps.setInt(3,    product.getQuantity());
+            ps.setObject(4, product.getImportedDate());
+            try(ResultSet rs = ps.executeQuery()){
+                if (rs.next()){
+                    product.setProductId(rs.getInt("product_id"));
+                }
+            }
+        } catch (SQLException e) {
+            println("Insert error: " + e.getMessage());
+        }
     }
 
     @Override
