@@ -66,6 +66,22 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public boolean saveToDatabase(List<Product> toInsert, List<Product> toUpdate) {
+        try(Connection conn = DatabaseConfig.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                for (Product p : toInsert) insert(p,conn);
+                for (Product p : toUpdate) update(p,conn);
+                conn.commit();
+                conn.setAutoCommit(true);
+                return true;
+            } catch (Exception e) {
+                conn.rollback();
+                conn.setAutoCommit(true);
+                System.err.println("Save transaction error: " + e.getMessage());
+            }
+        } catch (SQLException e) {
+            System.err.println("Connection error: " + e.getMessage());
+        }
         return false;
     }
 }
