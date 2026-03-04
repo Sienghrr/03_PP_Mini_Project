@@ -51,9 +51,16 @@ public class StockService {
                 .filter(p -> !p.isDeleted() && p.getProductId() > 0 )
                 .collect(Collectors.toList());
     }
-
+    //getPageProduct-feature
     public List<Product> getPageProducts() {
-       return null;
+        List<Product> visible = getVisibleProducts();
+        int total = visible.size();
+        int totalPages = getTotalPages();
+        if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+        int start = (currentPage - 1) * rowsPerPage;
+        int end   = Math.min(start + rowsPerPage, total);
+        if (start >= total) return new ArrayList<>();
+        return visible.subList(start, end);
     }
 
     public int getTotalPages() {
@@ -105,7 +112,6 @@ public class StockService {
             return true;
         }
 
-
         boolean exists = sessionProducts.stream().anyMatch(p -> p.getProductId() == id);
         if (!exists) return false;
 
@@ -145,9 +151,12 @@ public class StockService {
         return true;
     }
 
-
+    //SearchByName-feature
     public List<Product> searchByName(String keyword) {
-        return null;
+        return getVisibleProducts()
+                .stream()
+                .filter(p -> p.getProductName().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toList());
     }
 
 
@@ -166,7 +175,6 @@ public class StockService {
     public List<Product> getUnsavedUpdates() { return new ArrayList<>(pendingUpdates); }
     public boolean hasUnsavedChanges() {
         return !pendingInserts.isEmpty() || !pendingUpdates.isEmpty() ; }
-
 
     public BackupVersion createBackup(String name, String description) {
         return backupDAO.createBackup(name, description);
