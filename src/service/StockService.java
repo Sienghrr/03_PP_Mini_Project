@@ -75,7 +75,10 @@ public class StockService {
 
 
     public void writeProduct(Product product) {
-
+        int tempId = -(pendingInserts.size() + 1);
+        product.setProductId(tempId);
+        sessionProducts.add(product);
+        pendingInserts.add(product);
     }
 
     public int getTotalProduct(){
