@@ -84,7 +84,11 @@ public class StockService {
 
 
     public Product readById(int id) {
-        return null;
+        return sessionProducts.stream()
+                .filter(p -> p.getProductId() == id && !p.isDeleted())
+                .findFirst()
+                .orElse(null);
+
     }
 
 
