@@ -14,8 +14,7 @@ StockManagementSystem_Mini_Project/
 │    ├── dao/
 │    │   ├── impl/
 │    │   │      └── ProductDAOImpl.java
-│    │   ├── ProductDAO.java
-│    │   └── BackupVersion.java
+│    │   └── ProductDAO.java 
 │    ├── domain/
 │    │   └── Product.java
 │    ├── lib/
