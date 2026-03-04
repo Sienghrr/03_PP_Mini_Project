@@ -148,7 +148,14 @@ public class StockService {
 
 
     public boolean save() {
-        return false;
+        boolean ok = productDAO.saveToDatabase(pendingInserts, pendingUpdates);
+        if (ok) {
+            pendingInserts.clear();
+            pendingUpdates.clear();
+            // Reload from DB to get proper IDs
+            loadFromDatabase();
+        }
+        return ok;
     }
 
     public List<Product> getUnsavedInserts() { return new ArrayList<>(pendingInserts); }
