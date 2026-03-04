@@ -25,6 +25,29 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public void delete(int idToDelete) {
+        // validate the product id
+        if (idToDelete <= 0) {
+            println("Invalid ID: " + idToDelete);
+            return;
+        }
+        // sql statement for delete the product
+        String sql =
+                """ 
+                DELETE FROM products WHERE product_id=?
+                """;
+        // get connection and create prepare statement for delete
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idToDelete);
+            int affectedRows = ps.executeUpdate();
+            if(affectedRows>0)
+                println("Successfully deleted product with ID: " + idToDelete);
+            else
+                println("No product found with ID: " + idToDelete);
+
+        } catch (SQLException e) {
+            System.err.println("Delete error: " + e.getMessage());
+        }
 
     }
 
