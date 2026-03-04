@@ -15,5 +15,4 @@ public interface ProductDAO {
     List<Product> findAll();
     // Save to DB
     boolean saveToDatabase (List<Product> toInsert, List<Product> toUpdate);
-
 }
