@@ -119,6 +119,25 @@ public class StockService {
     }
 
     public boolean deleteProduct(int id) {
+        // find the product with id to delete in session
+        Optional<Product> opt =
+                sessionProducts
+                        .stream()
+                        .filter(p -> p.getProductId() == id)
+                        .findFirst();
+        // if product not found return false
+        if (opt.isEmpty()) return false;
+        // if found and get those product for delete
+        Product p = opt.get();
+        if (id > 0) productDAO.delete(p.getProductId());
+        // remove from session
+        sessionProducts.remove(p);
+        /* remove the product from pending Insert and Updates
+        if the product have added or updated (not yet save to DB)
+        * */
+        pendingInserts.removeIf(i -> i.getProductId() == id);
+        pendingUpdates.removeIf(u -> u.getProductId() == id);
+
         return true;
     }
 
