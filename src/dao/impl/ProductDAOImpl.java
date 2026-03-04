@@ -3,31 +3,29 @@ package dao.impl;
 import config.DatabaseConfig;
 import dao.ProductDAO;
 import domain.Product;
+import mapper.ProductMapper;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static utils.Utils.println;
+
 public class ProductDAOImpl implements ProductDAO {
 
     @Override
-    public boolean insert(Product product) {
-        return false;
+    public void insert(Product product, Connection conn) {
+
     }
 
     @Override
-    public boolean update(Product product) {
-        return false;
+    public void update(Product product,Connection conn) {
+
     }
 
     @Override
-    public boolean delete(int id) {
-        return false;
-    }
+    public void delete(int idToDelete) {
 
-    @Override
-    public Product findById(int id) {
-        return null;
     }
 
     @Override
@@ -44,17 +42,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public List<Product> searchByName(String name) {
-        return List.of();
-    }
-
-    @Override
-    public List<Product> findWithPagination(int offset, int limit) {
-        return List.of();
-    }
-
-    @Override
-    public boolean saveToDatabase(List<Product> toInsert, List<Product> toUpdate, List<Integer> toDelete) {
+    public boolean saveToDatabase(List<Product> toInsert, List<Product> toUpdate) {
         return false;
     }
 }
