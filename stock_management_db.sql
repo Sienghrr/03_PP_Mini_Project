@@ -18,33 +18,6 @@ CREATE TABLE IF NOT EXISTS products (
 );
 
 -- ============================================================
--- Backup / Restore Tables
--- ============================================================
-
-CREATE TABLE IF NOT EXISTS backup_versions (
-    version_id   SERIAL PRIMARY KEY,
-    version_name VARCHAR(100)  NOT NULL,
-    created_at   TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    description  VARCHAR(500)
-);
-
-CREATE TABLE IF NOT EXISTS backup_products (
-   id            INT  NOT NULL,
-   version_id    INT  NOT NULL,
-   product_name          VARCHAR(255)  NOT NULL,
-   unit_price    DECIMAL(10,2) NOT NULL,
-   quantity      INT           NOT NULL,
-   imported_date DATE          NOT NULL,
-   is_deleted    BOOLEAN       NOT NULL DEFAULT FALSE,
-   PRIMARY KEY (id, version_id),
-   CONSTRAINT fk_version
-       FOREIGN KEY (version_id)
-           REFERENCES backup_versions(version_id)
-           ON DELETE CASCADE
-);
-
-
--- ============================================================
 -- Seed Sample Data
 -- ============================================================
 

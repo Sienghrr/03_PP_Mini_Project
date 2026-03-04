@@ -1,11 +1,8 @@
 package service;
 
-import com.sun.source.tree.BreakTree;
 import config.AppConfig;
-import dao.BackupDAO;
 import dao.ProductDAO;
 import dao.impl.ProductDAOImpl;
-import domain.BackupVersion;
 import domain.Product;
 
 import java.time.LocalDate;
@@ -25,7 +22,6 @@ public class StockService {
         AppConfig.saveRowsPerPage(this.rowsPerPage);
     }
     private final ProductDAO productDAO = new ProductDAOImpl();
-    private final BackupDAO backupDAO  = new BackupDAO();
 
     // In-memory session store (loaded from DB + pending changes)
     private List<Product> sessionProducts = new ArrayList<>();
@@ -100,7 +96,6 @@ public class StockService {
                 .orElse(null);
 
     }
-
 
     public boolean updateProduct(int id, String name, double price, int qty, LocalDate date) {
         Optional<Product> insert = pendingInserts.stream()
@@ -179,25 +174,4 @@ public class StockService {
     public boolean hasUnsavedChanges() {
         return !pendingInserts.isEmpty() || !pendingUpdates.isEmpty() ; }
 
-    public BackupVersion createBackup(String name, String description) {
-        return backupDAO.createBackup(name, description);
-    }
-
-    public List<BackupVersion> getAllBackupVersions() {
-        return backupDAO.getAllVersions();
-    }
-
-    public boolean restoreVersion(int versionId) {
-        boolean ok = backupDAO.restoreVersion(versionId);
-        if (ok) loadFromDatabase();
-        return ok;
-    }
-
-    public boolean deleteBackupVersion(int versionId) {
-        return backupDAO.deleteVersion(versionId);
-    }
-
-    public List<Product> previewBackup(int versionId) {
-        return backupDAO.getBackupProducts(versionId);
-    }
 }

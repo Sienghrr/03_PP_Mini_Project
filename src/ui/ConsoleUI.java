@@ -1,6 +1,5 @@
 package ui;
 
-import domain.BackupVersion;
 import domain.Product;
 import service.StockService;
 import utils.TableHelper;
@@ -15,6 +14,7 @@ import static utils.Utils.*;
 public class ConsoleUI {
 
     private final StockService service = new StockService();
+
     public void start(){
 
         System.out.println(CYAN + BOLD);
@@ -40,8 +40,6 @@ public class ConsoleUI {
                 case "sa"  -> saveChanges();
                 case "un"  -> viewUnsavedChanges();
                 case "pa" -> paginationMenu();
-                case "ba" -> backupMenu();
-                case "re" -> restoreMenu();
                 case "e"  -> {
                     running = exitApp();
                     System.exit(0);
@@ -85,7 +83,6 @@ public class ConsoleUI {
         System.out.println(GREEN + "  ✔ Product added to session (not yet saved to DB)." + RESET);
     }
 
-
     private void readProductById() {
         int id = getInt(" Enter product ID : ");
         Product p = service.readById(id);
@@ -95,7 +92,6 @@ public class ConsoleUI {
            TableHelper.displayTable(p);
 
     }
-
 
     private void updateProduct() {
         int id = getInt(" Enter product ID to update : ");
@@ -112,7 +108,6 @@ public class ConsoleUI {
                 : RED + "  ✘ Update failed." + RESET);
     }
 
-
     private void deleteProduct() {
         int id = getInt("  Enter product ID to delete : ");
         String confirm = Validate.validate(getString("  Are you sure? (y/n)"));
@@ -123,7 +118,6 @@ public class ConsoleUI {
                 : RED + "  ✘ Product not found." + RESET);
     }
 
-
     private void searchByName() {
         String kw = Validate.validate(getString("Enter key to search : "));
         List<Product> results = service.searchByName(kw);
@@ -132,14 +126,12 @@ public class ConsoleUI {
         System.out.println("  " + results.size() + " result(s) found.");
     }
 
-
     private void setRowsPerPage() {
         int rows = (int) getNumber(" Enter number of rows per page : ");
         service.setRowsPerPage(rows);
         TableHelper.displayTable(service.getPageProducts(),service.getCurrentPage(),service.getTotalPages());
         System.out.println(GREEN + "  ✔ Rows per page set to " + rows + "." + RESET);
     }
-
 
     private void saveChanges() {
         if (!service.hasUnsavedChanges()) {
@@ -157,7 +149,6 @@ public class ConsoleUI {
                 : RED + "  ✘ Save failed. Check database connection." + RESET);
     }
 
-
     private void viewUnsavedChanges() {
         List<Product> ins = service.getUnsavedInserts();
         List<Product> upd = service.getUnsavedUpdates();
@@ -173,7 +164,6 @@ public class ConsoleUI {
 
         if (!service.hasUnsavedChanges()) System.out.println(GREEN + "  All changes are saved." + RESET);
     }
-
 
     private void paginationMenu() {
         boolean inPagination = true;
@@ -193,69 +183,6 @@ public class ConsoleUI {
                 case "B" -> inPagination = false;
                 default  -> System.out.println(RED + "  Invalid option." + RESET);
             }
-        }
-    }
-
-    private void backupMenu() {
-        System.out.println(BLUE + "\n── Backup ───────────────────────────────────" + RESET);
-        String name = getString("  Backup version name (e.g., v1.0 or leave blank for auto)");
-        if (name.isBlank()) name = "backup_" + LocalDate.now();
-        String desc = getString("  Description (optional)");
-
-        BackupVersion v = service.createBackup(name, desc);
-        if (v != null) {
-            System.out.println(GREEN + "  ✔ Backup created: " + v.getVersionName() + " (ID: " + v.getVersionId() + ")" + RESET);
-        } else {
-            System.out.println(RED + "  ✘ Backup failed." + RESET);
-        }
-    }
-
-
-    private void restoreMenu() {
-        System.out.println(BLUE + "\n── Restore ──────────────────────────────────" + RESET);
-        List<BackupVersion> versions = service.getAllBackupVersions();
-        if (versions.isEmpty()) {
-            System.out.println(RED + "  No backup versions available." + RESET);
-            return;
-        }
-
-        System.out.println("  Available Versions:");
-        versions.forEach(v -> System.out.println(v.toString()));
-
-        System.out.println("  Options:");
-        System.out.println("    [R] Restore a version");
-        System.out.println("    [V] Preview a version's data");
-        System.out.println("    [D] Delete a version");
-        System.out.println("    [B] Back");
-        String cmd = getString("  Choice").trim().toUpperCase();
-
-        switch (cmd) {
-            case "R" -> {
-                int vid = (int) getNumber("  Enter version ID to restore");
-                String confirm = getString("  ⚠ This will OVERWRITE current data. Continue? (y/n)");
-                if (confirm.equalsIgnoreCase("y")) {
-                    boolean ok = service.restoreVersion(vid);
-                    System.out.println(ok ? GREEN + "  ✔ Restored successfully!" + RESET
-                            : RED + "  ✘ Restore failed." + RESET);
-                } else {
-                    System.out.println("  Cancelled.");
-                }
-            }
-            case "V" -> {
-                int vid = (int) getNumber("  Enter version ID to preview");
-                List<Product> products = service.previewBackup(vid);
-                System.out.println("  Preview of version " + vid + ":");
-                if (products.isEmpty()) System.out.println("  (empty)");
-                else products.forEach(p -> System.out.println(p.toString()));
-            }
-            case "D" -> {
-                int vid = (int) getNumber("  Enter version ID to delete");
-                boolean ok = service.deleteBackupVersion(vid);
-                System.out.println(ok ? GREEN + "  ✔ Version deleted." + RESET
-                        : RED + "  ✘ Failed to delete." + RESET);
-            }
-            case "B" -> {}
-            default  -> System.out.println(RED + "  Invalid option." + RESET);
         }
     }
 
